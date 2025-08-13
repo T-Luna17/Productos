@@ -1,4 +1,4 @@
-import { getProducts, createProduct, updateProduct, deleteProduct, getProductById } from "./servicesProductos.js";
+import { getProducts, createProduct, updateProduct, deleteProduct, getProductById } from "../services/servicesProductos.js";
 
 const $ = (sel) => document.querySelector(sel);
 const form = $("#product-form");
