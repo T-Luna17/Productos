@@ -1,5 +1,6 @@
 // services.js
-const API_URL = "http://localhost:3001/products";
+const API_URL = "http://localhost:3001/productos";
+
 
 /**
  * Obtiene la lista de productos
