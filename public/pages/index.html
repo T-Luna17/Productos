@@ -1,36 +1,74 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="utf-8" />
   <title>Gestión de Productos</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="stylesheet" href="../Estilos/style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
-  <h1>Gestión de Productos</h1>
+  <header class="header">
+    <div class="logo">
+      <span class="logo-icon">📦</span>
+      <h1>Product Manager</h1>
+    </div>
+    <div class="header-right">
+      <input id="search" type="search" placeholder="Buscar producto..." />
+    </div>
+  </header>
 
-  <form id="productoForm">
-    <input type="hidden" id="productoId" />
-    <input type="text" id="nombre" placeholder="Nombre del producto" required />
-    <input type="number" id="precio" placeholder="Precio" required />
-    <input type="number" id="stock" placeholder="Stock" required />
-    <button type="submit">Guardar Producto</button>
-  </form>
+  <main class="main-content">
+    <!-- Panel izquierdo (formulario) -->
+    <section class="card form-card">
+      <h2 id="form-title">Nuevo Producto</h2>
+      <form id="product-form">
+        <input type="hidden" id="product-id" />
+        <div class="field">
+          <label for="name">Nombre</label>
+          <input id="name" name="name" type="text" placeholder="Ej. Laptop Pro" required />
+        </div>
+        <div class="field">
+          <label for="price">Precio (₡)</label>
+          <input id="price" name="price" type="number" min="0" step="0.01" placeholder="0.00" required />
+        </div>
+        <div class="field">
+          <label for="stock">Stock</label>
+          <input id="stock" name="stock" type="number" min="0" step="1" placeholder="0" required />
+        </div>
+        <div class="actions">
+          <button type="submit" id="save-btn" class="btn primary">Guardar</button>
+          <button type="button" id="cancel-btn" class="btn secondary hidden">Cancelar</button>
+        </div>
+      </form>
+      <p id="message" class="message"></p>
+    </section>
 
-  <h2>Lista de Productos</h2>
-  <table>
-    <thead>
-      <tr>
-        <th>Nombre</th>
-        <th>Precio</th>
-        <th>Stock</th>
-        <th>Acciones</th>
-      </tr>
-    </thead>
-    <tbody id="productosTable"></tbody>
-  </table>
+    <!-- Panel derecho (tabla) -->
+    <section class="card table-card">
+      <h2>Productos</h2>
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>Nombre</th>
+              <th>Precio</th>
+              <th>Stock</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="products-body"></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <p>© 2025 Product Manager App</p>
+  </footer>
 
   <script type="module" src="../js/script.js"></script>
-
 </body>
 </html>
