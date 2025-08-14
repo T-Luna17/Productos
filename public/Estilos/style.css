@@ -1,6 +1,6 @@
 :root {
   --bg: #0a0a0a; /* Negro más profundo */
-  --card-bg: #161616; /* Paneles oscuros */
+  --card-bg: #856588; /* Paneles oscuros */
   --text: #e5e5e5; /* Texto claro */
   --muted: #9f9f9f; /* Texto tenue */
   --primary: #7c3aed; /* Morado principal */
@@ -9,7 +9,7 @@
   --danger-hover: #dc2626;
   --secondary: #2d2d2d;
   --secondary-hover: #1f1f1f;
-  --border: #262626;
+  --border: #ffffff;
   --radius: 12px;
   --font: 'Inter', sans-serif;
 
