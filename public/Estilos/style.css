@@ -1,17 +1,20 @@
 :root {
-  --bg: #0f172a;
-  --card-bg: #1e293b;
-  --text: #e2e8f0;
-  --muted: #94a3b8;
-  --primary: #3b82f6;
-  --primary-hover: #2563eb;
+  --bg: #0a0a0a; /* Negro más profundo */
+  --card-bg: #161616; /* Paneles oscuros */
+  --text: #e5e5e5; /* Texto claro */
+  --muted: #9f9f9f; /* Texto tenue */
+  --primary: #7c3aed; /* Morado principal */
+  --primary-hover: #6d28d9; /* Morado más oscuro */
   --danger: #ef4444;
   --danger-hover: #dc2626;
-  --secondary: #475569;
-  --secondary-hover: #334155;
-  --border: #334155;
+  --secondary: #2d2d2d;
+  --secondary-hover: #1f1f1f;
+  --border: #262626;
   --radius: 12px;
   --font: 'Inter', sans-serif;
+
+  /* Neón rosa para efectos */
+  --neon-pink: #ff2b91;
 }
 
 * {
@@ -58,9 +61,15 @@ body {
   padding: 8px 14px;
   border-radius: var(--radius);
   border: 1px solid var(--border);
-  background: #0f172a;
+  background: #0a0a0a;
   color: var(--text);
   outline: none;
+  transition: 0.3s ease;
+}
+
+.header-right input:focus {
+  border-color: var(--neon-pink);
+  box-shadow: 0 0 12px var(--neon-pink);
 }
 
 /* Main layout */
@@ -84,7 +93,7 @@ body {
   border-radius: var(--radius);
   padding: 20px;
   border: 1px solid var(--border);
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 0 15px rgba(124, 58, 237, 0.1); /* Morado suave */
 }
 
 .card h2 {
@@ -110,11 +119,19 @@ body {
   padding: 10px;
   border-radius: var(--radius);
   border: 1px solid var(--border);
-  background: #0f172a;
+  background: #0a0a0a;
   color: var(--text);
   outline: none;
+  transition: 0.3s ease;
 }
 
+/* Efecto neón rosa al focus */
+.field input:focus {
+  border-color: var(--neon-pink);
+  box-shadow: 0 0 10px var(--neon-pink);
+}
+
+/* Botones */
 .actions {
   display: flex;
   gap: 10px;
@@ -127,7 +144,9 @@ body {
   border-radius: var(--radius);
   font-weight: 600;
   cursor: pointer;
-  transition: background 0.2s ease;
+  transition: all 0.3s ease;
+  position: relative;
+  z-index: 1;
 }
 
 .btn.primary {
@@ -137,6 +156,7 @@ body {
 
 .btn.primary:hover {
   background: var(--primary-hover);
+  box-shadow: 0 0 10px var(--neon-pink);
 }
 
 .btn.secondary {
@@ -146,6 +166,7 @@ body {
 
 .btn.secondary:hover {
   background: var(--secondary-hover);
+  box-shadow: 0 0 10px var(--neon-pink);
 }
 
 .btn.danger {
@@ -155,12 +176,14 @@ body {
 
 .btn.danger:hover {
   background: var(--danger-hover);
+  box-shadow: 0 0 10px var(--neon-pink);
 }
 
 .hidden {
   display: none !important;
 }
 
+/* Mensajes */
 .message {
   margin-top: 12px;
   font-size: 14px;
@@ -175,7 +198,7 @@ body {
   color: #ef4444;
 }
 
-/* Table */
+/* Tabla */
 .table-wrapper {
   overflow-x: auto;
 }
@@ -194,21 +217,4 @@ th, td {
 th {
   color: var(--muted);
   font-size: 14px;
-}
-
-td {
-  font-size: 14px;
-}
-
-td button {
-  margin-right: 6px;
-}
-
-/* Footer */
-.footer {
-  text-align: center;
-  padding: 16px;
-  color: var(--muted);
-  font-size: 14px;
-  border-top: 1px solid var(--border);
 }
