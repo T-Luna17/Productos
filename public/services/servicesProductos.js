@@ -1,88 +1,55 @@
-// services.js
-const API_URL = "http://localhost:3001/productos";
+const API_URL = "http://localhost:3001/productos"; 
 
-
-/**
- * Obtiene la lista de productos
- * @param {string} query - filtro opcional por nombre
- */
-export async function getProducts(query = "") {
+export const getProducts = async () => {
   try {
-    const url = query ? `${API_URL}?q=${encodeURIComponent(query)}` : API_URL;
-    const res = await fetch(url);
-    if (!res.ok) throw new Error(`Error al obtener productos (${res.status})`);
-    return await res.json();
+    const response = await fetch(API_URL);
+    if (!response.ok) throw new Error("Error al obtener productos");
+    return await response.json();
   } catch (error) {
-    console.error("getProducts:", error);
-    throw error;
+    console.error(error);
+    return [];
   }
-}
+};
 
-/**
- * Crea un producto nuevo
- * @param {Object} product - { name, price, stock }
- */
-export async function createProduct(product) {
+export const createProduct = async (product) => {
   try {
-    const res = await fetch(API_URL, {
+    const response = await fetch(API_URL, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(product)
+      body: JSON.stringify(product),
     });
-    if (!res.ok) throw new Error(`Error al crear producto (${res.status})`);
-    return await res.json();
+    if (!response.ok) throw new Error("Error al crear producto");
+    return await response.json();
   } catch (error) {
-    console.error("createProduct:", error);
-    throw error;
+    console.error(error);
+    return null;
   }
-}
+};
 
-/**
- * Actualiza un producto
- * @param {string|number} id
- * @param {Object} product
- */
-export async function updateProduct(id, product) {
+export const updateProduct = async (id, product) => {
   try {
-    const res = await fetch(`${API_URL}/${id}`, {
+    const response = await fetch(`${API_URL}/${id}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(product)
+      body: JSON.stringify(product),
     });
-    if (!res.ok) throw new Error(`Error al actualizar producto (${res.status})`);
-    return await res.json();
+    if (!response.ok) throw new Error("Error al actualizar producto");
+    return await response.json();
   } catch (error) {
-    console.error("updateProduct:", error);
-    throw error;
+    console.error(error);
+    return null;
   }
-}
+};
 
-/**
- * Elimina un producto por ID
- * @param {string|number} id
- */
-export async function deleteProduct(id) {
+export const deleteProduct = async (id) => {
   try {
-    const res = await fetch(`${API_URL}/${id}`, { method: "DELETE" });
-    if (!res.ok) throw new Error(`Error al eliminar producto (${res.status})`);
+    const response = await fetch(`${API_URL}/${id}`, {
+      method: "DELETE",
+    });
+    if (!response.ok) throw new Error("Error al eliminar producto");
     return true;
   } catch (error) {
-    console.error("deleteProduct:", error);
-    throw error;
+    console.error(error);
+    return false;
   }
-}
-
-/**
- * Obtiene un producto específico
- * @param {string|number} id
- */
-export async function getProductById(id) {
-  try {
-    const res = await fetch(`${API_URL}/${id}`);
-    if (!res.ok) throw new Error(`Error al obtener producto (${res.status})`);
-    return await res.json();
-  } catch (error) {
-    console.error("getProductById:", error);
-    throw error;
-  }
-}
+};

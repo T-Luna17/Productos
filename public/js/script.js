@@ -1,143 +1,131 @@
-import { getProducts, createProduct, updateProduct, deleteProduct, getProductById } from "../services/servicesProductos.js";
+import { getProducts, createProduct, updateProduct, deleteProduct } from '../services/servicesProductos.js';
 
-const $ = (sel) => document.querySelector(sel);
-const form = $("#product-form");
-const message = $("#message");
-const productsBody = $("#products-body");
-const formTitle = $("#form-title");
-const saveBtn = $("#save-btn");
-const cancelBtn = $("#cancel-btn");
-const searchInput = $("#search");
+const form = document.getElementById('product-form');
+const nameInput = document.getElementById('name');
+const priceInput = document.getElementById('price');
+const stockInput = document.getElementById('stock');
+const productIdInput = document.getElementById('product-id');
+const saveBtn = document.getElementById('save-btn');
+const cancelBtn = document.getElementById('cancel-btn');
+const messageEl = document.getElementById('message');
+const productsBody = document.getElementById('products-body');
+const searchInput = document.getElementById('search');
 
-function showMessage(text, type = "info") {
-  message.textContent = text;
-  message.className = `message ${type === "error" ? "error" : type === "success" ? "success" : ""}`;
-}
-function clearMessageAfter(ms = 2000) {
-  setTimeout(() => showMessage(""), ms);
-}
+let products = [];
+let editing = false;
 
-function formToProduct() {
-  return {
-    name: $("#name").value.trim(),
-    price: parseFloat($("#price").value),
-    stock: parseInt($("#stock").value, 10)
-  };
+// ✅ Cargar productos al inicio
+document.addEventListener('DOMContentLoaded', loadProducts);
+
+async function loadProducts() {
+  products = await getProducts();
+  renderProducts(products);
 }
 
-function resetForm() {
-  form.reset();
-  $("#product-id").value = "";
-  formTitle.textContent = "Nuevo Producto";
-  saveBtn.textContent = "Guardar";
-  cancelBtn.classList.add("hidden");
-}
-
-function renderProducts(list = []) {
-  if (!Array.isArray(list)) list = [];
-  productsBody.innerHTML = list.map(p => `
-    <tr>
-      <td>${escapeHtml(p.name)}</td>
-      <td>₡ ${Number(p.price).toLocaleString("es-CR", {minimumFractionDigits:2})}</td>
-      <td>${Number(p.stock)}</td>
-      <td>
-        <button class="btn secondary" data-edit="${p.id}">Editar</button>
-        <button class="btn danger" data-del="${p.id}">Eliminar</button>
-      </td>
-    </tr>
-  `).join("") || `
-    <tr><td colspan="4">No hay productos registrados.</td></tr>
-  `;
-}
-
-function escapeHtml(str = "") {
-  return str.replace(/[&<>"']/g, m => (
-    { "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;" }[m]
-  ));
-}
-
-// Eventos
-document.addEventListener("DOMContentLoaded", async () => {
-  try {
-    const initial = await getProducts();
-    renderProducts(initial);
-  } catch {
-    showMessage("No se pudo cargar la lista", "error");
-  }
-});
-
-form.addEventListener("submit", async (e) => {
-  e.preventDefault();
-  const { name, price, stock } = formToProduct();
-  if (!name || isNaN(price) || price < 0 || !Number.isInteger(stock) || stock < 0) {
-    showMessage("Datos inválidos", "error");
+// ✅ Renderizar tabla
+function renderProducts(data) {
+  productsBody.innerHTML = '';
+  if (data.length === 0) {
+    productsBody.innerHTML = `<tr><td colspan="4" style="text-align:center;">No hay productos</td></tr>`;
     return;
   }
-  const editingId = $("#product-id").value;
-  try {
-    if (editingId) {
-      await updateProduct(editingId, { name, price, stock });
-      showMessage("Producto actualizado", "success");
-    } else {
-      await createProduct({ name, price, stock });
-      showMessage("Producto creado", "success");
-    }
-    const list = await getProducts(searchInput.value.trim());
-    renderProducts(list);
-    resetForm();
-    clearMessageAfter();
-  } catch {
-    showMessage("Error en la operación", "error");
+
+  data.forEach(product => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${product.name}</td>
+      <td>₡${product.price.toFixed(2)}</td>
+      <td>${product.stock}</td>
+      <td>
+        <button class="btn small edit-btn">Editar</button>
+        <button class="btn small danger delete-btn">Eliminar</button>
+      </td>
+    `;
+
+    tr.querySelector('.edit-btn').addEventListener('click', () => startEdit(product));
+    tr.querySelector('.delete-btn').addEventListener('click', () => confirmDelete(product.id));
+
+    productsBody.appendChild(tr);
+  });
+}
+
+// ✅ Manejar envío del formulario
+form.addEventListener('submit', async (e) => {
+  e.preventDefault();
+
+  const name = nameInput.value.trim();
+  const price = parseFloat(priceInput.value);
+  const stock = parseInt(stockInput.value);
+
+  if (!name || isNaN(price) || isNaN(stock)) {
+    showMessage('Por favor, complete todos los campos correctamente.', 'error');
+    return;
   }
+
+  const productData = { name, price, stock };
+
+  if (editing) {
+    const id = parseInt(productIdInput.value);
+    await updateProduct(id, productData);
+    showMessage('Producto actualizado con éxito.', 'success');
+  } else {
+    await createProduct(productData);
+    showMessage('Producto agregado con éxito.', 'success');
+  }
+
+  resetForm();
+  loadProducts();
 });
 
-cancelBtn.addEventListener("click", resetForm);
+// ✅ Función para iniciar edición
+function startEdit(product) {
+  editing = true;
+  productIdInput.value = product.id;
+  nameInput.value = product.name;
+  priceInput.value = product.price;
+  stockInput.value = product.stock;
 
-productsBody.addEventListener("click", async (e) => {
-  const btn = e.target.closest("button");
-  if (!btn) return;
+  saveBtn.textContent = 'Actualizar';
+  cancelBtn.classList.remove('hidden');
+  document.getElementById('form-title').textContent = 'Editar Producto';
+}
 
-  if (btn.dataset.edit) {
-    try {
-      const p = await getProductById(btn.dataset.edit);
-      $("#product-id").value = p.id;
-      $("#name").value = p.name;
-      $("#price").value = p.price;
-      $("#stock").value = p.stock;
+// ✅ Cancelar edición
+cancelBtn.addEventListener('click', resetForm);
 
-      formTitle.textContent = "Editar Producto";
-      saveBtn.textContent = "Actualizar";
-      cancelBtn.classList.remove("hidden");
-      showMessage(`Editando "${p.name}"`);
-    } catch {
-      showMessage("Error al cargar producto", "error");
-    }
+function resetForm() {
+  editing = false;
+  productIdInput.value = '';
+  nameInput.value = '';
+  priceInput.value = '';
+  stockInput.value = '';
+  saveBtn.textContent = 'Guardar';
+  cancelBtn.classList.add('hidden');
+  document.getElementById('form-title').textContent = 'Nuevo Producto';
+}
+
+// ✅ Eliminar producto
+async function confirmDelete(id) {
+  if (confirm('¿Seguro que deseas eliminar este producto?')) {
+    await deleteProduct(id);
+    showMessage('Producto eliminado.', 'success');
+    loadProducts();
   }
+}
 
-  if (btn.dataset.del) {
-    const ok = confirm("¿Seguro que deseas eliminar este producto?");
-    if (!ok) return;
-    try {
-      await deleteProduct(btn.dataset.del);
-      const list = await getProducts(searchInput.value.trim());
-      renderProducts(list);
-      showMessage("Producto eliminado", "success");
-      clearMessageAfter();
-    } catch {
-      showMessage("No se pudo eliminar", "error");
-    }
-  }
-});
+// ✅ Mostrar mensajes temporales
+function showMessage(text, type = 'info') {
+  messageEl.textContent = text;
+  messageEl.className = `message ${type}`;
+  setTimeout(() => {
+    messageEl.textContent = '';
+    messageEl.className = 'message';
+  }, 3000);
+}
 
-let searchTimer;
-searchInput.addEventListener("input", () => {
-  clearTimeout(searchTimer);
-  searchTimer = setTimeout(async () => {
-    try {
-      const list = await getProducts(searchInput.value.trim());
-      renderProducts(list);
-    } catch {
-      showMessage("Error en la búsqueda", "error");
-    }
-  }, 300);
+// ✅ Buscar productos en tiempo real
+searchInput.addEventListener('input', (e) => {
+  const term = e.target.value.toLowerCase();
+  const filtered = products.filter(p => p.name.toLowerCase().includes(term));
+  renderProducts(filtered);
 });
